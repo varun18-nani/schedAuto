@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SchedAI — AI-Powered College Timetable Generator
 
-## Getting Started
+> A production-ready SaaS platform for generating conflict-free college timetables using AI and modern web technologies.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Features
+
+- **AI Timetable Generation** — Multi-algorithm scheduling engine (CSP, Graph Coloring, Simulated Annealing)
+- **Drag-and-Drop Timetable Builder** — Interactive Excel-like grid with real-time conflict detection
+- **Real-time Conflict Detection** — Faculty overlap and room clash warnings
+- **Undo/Redo** — Full state history for manual edits
+- **Analytics Dashboard** — Charts for room utilization, faculty workload, department distribution
+- **College Setup Wizard** — Multi-step onboarding for institutions
+- **Multi-Role Access** — Super Admin, College Admin, HOD, Faculty, Student
+- **Export** — PDF, Excel, CSV support (coming in Phase 5)
+- **Dark Sidebar UI** — Premium enterprise-grade SaaS design
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 15 (App Router), React, TypeScript |
+| Styling | TailwindCSS v4, shadcn/ui, Framer Motion |
+| Charts | Recharts |
+| Drag-and-Drop | @dnd-kit/core |
+| Forms | React Hook Form + Zod |
+| ORM | Prisma + PostgreSQL |
+| Auth | NextAuth.js (Google OAuth + Email) |
+| State | useReducer + TanStack Query |
+
+---
+
+## 📦 Project Structure
+
+```
+src/
+├── app/
+│   ├── (dashboard)/          # All dashboard routes
+│   │   ├── page.tsx          # Analytics dashboard
+│   │   ├── timetables/       # Manual timetable builder
+│   │   ├── ai-generate/      # AI generation pipeline
+│   │   └── setup/            # College setup wizard
+│   └── api/auth/             # NextAuth API routes
+├── components/
+│   ├── layout/               # Sidebar, Header
+│   ├── timetable/            # Grid, Cells, Builder
+│   ├── wizard/               # Setup wizard forms
+│   └── ui/                   # shadcn/ui components
+├── lib/                      # Utilities and data helpers
+├── types/                    # TypeScript types
+└── prisma/                   # Database schema
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏃 Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Install dependencies
+npm install
 
-## Learn More
+# Set up environment variables
+cp .env.example .env
+# Add DATABASE_URL, NEXTAUTH_SECRET, GOOGLE_CLIENT_ID, etc.
 
-To learn more about Next.js, take a look at the following resources:
+# Run development server
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📋 Development Phases
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [x] **Phase 1** — Foundation (Next.js, shadcn/ui, Prisma, NextAuth)
+- [x] **Phase 2** — Dashboard + College Setup Wizard
+- [x] **Phase 3** — Manual Timetable Builder + AI Generator UI
+- [ ] **Phase 4** — AI Scheduling Engine (Backend + DB)
+- [ ] **Phase 5** — Export, Polish, Notifications, Subscriptions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📄 License
+
+MIT © SchedAI
