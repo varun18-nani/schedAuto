@@ -136,9 +136,50 @@ export function TimetableBuilder() {
     dispatch({ type: "UPDATE", slots: newSlots })
   }
 
+  // Load generated timetable from localStorage if available
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("schedai_latest_timetable")
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            dispatch({ type: "UPDATE", slots: parsed })
+            detectConflicts(parsed)
+          }
+        } catch (e) {
+          console.error("Failed to parse stored timetable", e)
+        }
+      }
+    }
+  }, [])
+
+  const autoFixConflicts = async () => {
+    try {
+      setSaveStatus("saving")
+      const res = await fetch("/api/resolve-conflicts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slots: state.present }),
+      })
+      const data = await res.json()
+      if (data.repairedSlots) {
+        dispatch({ type: "UPDATE", slots: data.repairedSlots })
+        detectConflicts(data.repairedSlots)
+        setSaveStatus("saved")
+      }
+    } catch (e) {
+      console.error("Auto fix error", e)
+      setSaveStatus("unsaved")
+    }
+  }
+
   const handleSave = () => {
     setSaveStatus("saving")
-    setTimeout(() => setSaveStatus("saved"), 1200)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("schedai_latest_timetable", JSON.stringify(state.present))
+    }
+    setTimeout(() => setSaveStatus("saved"), 800)
   }
 
   const filledCount = state.present.filter((s) => !s.isBreak && s.subject).length
@@ -160,12 +201,17 @@ export function TimetableBuilder() {
         </div>
         {/* Conflict Indicator */}
         {conflictSlots.size > 0 && (
-          <div className="m-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-500 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[11px] font-semibold text-red-700">Conflicts Detected</p>
-              <p className="text-[10px] text-red-500">{conflictSlots.size} slot(s) with faculty overlap</p>
+          <div className="m-2 p-2 bg-red-50 border border-red-200 rounded-lg flex flex-col gap-1.5">
+            <div className="flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+              <span className="text-[11px] font-semibold text-red-700">Conflicts ({conflictSlots.size})</span>
             </div>
+            <button
+              onClick={autoFixConflicts}
+              className="w-full py-1 text-[11px] font-semibold bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+            >
+              Auto-Fix Conflicts (AI)
+            </button>
           </div>
         )}
         {/* Fill meter */}
@@ -214,9 +260,12 @@ export function TimetableBuilder() {
               <Redo2 className="w-4 h-4" />
             </button>
             <div className="w-px h-4 bg-slate-200 mx-1" />
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-colors">
+            <button
+              onClick={autoFixConflicts}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-colors"
+            >
               <Sparkles className="w-3.5 h-3.5" />
-              AI Optimize
+              AI Fix & Swap
             </button>
             <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium hover:bg-slate-100 text-slate-600 transition-colors">
               <Download className="w-3.5 h-3.5" />
